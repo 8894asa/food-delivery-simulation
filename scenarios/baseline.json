@@ -1,0 +1,16 @@
+{
+  "duration_minutes": 120,
+  "participation_rate": 0.5,
+  "round_trip_minutes": 15,
+  "seed": 42,
+  "destination_ids": ["building-a", "building-b"],
+  "stores": [
+    {
+      "id": "store-1",
+      "location_id": "shop",
+      "orders_per_hour": 100,
+      "delivery_orders_per_hour": 20,
+      "visitors_per_hour": 60
+    }
+  ]
+}

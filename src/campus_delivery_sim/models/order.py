@@ -1,4 +1,17 @@
-"""注文モデルのスケルトン。
+"""来店注文・配達注文と、実際に発生したイベント時刻。"""
+from dataclasses import dataclass
+from typing import Literal
 
-TODO: 注文ID、店舗ID、注文種別（来店／配達）、配達先ID、状態、各処理時刻を定義する。
-"""
+
+@dataclass
+class Order:
+    id: str
+    store_id: str
+    kind: Literal["delivery", "personal"]
+    ordered_at: float
+    destination_id: str | None = None
+    courier_id: str | None = None
+    preparation_started_at: float | None = None
+    ready_at: float | None = None
+    picked_up_at: float | None = None
+    delivered_at: float | None = None
