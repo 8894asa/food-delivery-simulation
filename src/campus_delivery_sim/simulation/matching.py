@@ -1,5 +1,10 @@
-"""配達注文の割り当てのスケルトン。
+"""出発時点で完成している注文を、完成順に割り当てる。"""
+from campus_delivery_sim.models.courier import Courier
+from campus_delivery_sim.models.store import Store
 
-TODO: 自分の商品を受け取る配達参加者に、完成済み・未割当の配達注文を割り当てる。
-TODO: 複数件配達、行き先条件、到着予定者への割り当てを後から拡張できるようにする。
-"""
+
+def match_orders(store: Store, courier: Courier) -> tuple[str, ...]:
+    if not courier.participates:
+        return ()
+    return tuple(store.ready_deliveries.popleft()
+                 for _ in range(min(courier.capacity, len(store.ready_deliveries))))
