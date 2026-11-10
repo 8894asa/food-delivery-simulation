@@ -125,14 +125,40 @@ PYTHONPATH=src python3 -m unittest discover -s tests -v
 
 下4行の内訳を足すと、丸める前の `mean` になります。
 
-### 個別の注文や来店者を追う
+### `orders.csv`（注文ごとの記録）
 
-`orders.csv` で配達注文を見るときは `kind` が `delivery` の行を絞り込みます。`personal` は来店者自身の注文で、`delivered_at` は空欄です。時刻列はすべてシミュレーション開始からの経過分です。
+1行が1件の注文です。配達注文だけを見るには、`kind` が `delivery` の行に絞ります。両方のCSVで、時刻はシミュレーション開始からの経過分です。
 
-- 配達注文は `ordered_at`（注文）、`preparation_started_at`（調理開始）、`ready_at`（調理完了）、`picked_up_at`（受け取り）、`delivered_at`（配達完了）の順に追えます。配達注文の時刻が空欄なら、その工程は観測終了までに発生していません。
-- 初期設定の `order-6` は開始約3.06分後に注文され、約14.21分後に配達完了しています。差を取ると、この注文の所要時間は約11.15分です。
-- 担当者を調べるには、`orders.csv` の `courier_id` を `visitors.csv` の `id` と照合します。`order-6` の担当は `visitor-8` です。
-- `visitors.csv` では `arrived_at` と `departed_at` で来店・出発の時刻を、`personal_order_id` で本人の注文を確認できます。`participates` が `True` でも、`delivery_order_ids` が `()` なら配達注文は引き受けていません。
+| 列 | 意味 |
+|---|---|
+| `id` | 注文ID（例 `order-6`） |
+| `store_id` | 注文を処理する店舗のID |
+| `kind` | `delivery` は配達注文、`personal` は来店者自身の注文 |
+| `ordered_at` | 注文が入った時刻 |
+| `destination_id` | 配達先の地点ID。来店者自身の注文では空欄 |
+| `courier_id` | 配達注文を引き受けた来店者、または自分用に注文した来店者のID。配達注文が未割当なら空欄 |
+| `preparation_started_at` | 調理開始時刻。観測終了までに調理を始めなければ空欄 |
+| `ready_at` | 調理完了時刻。観測終了までに調理が終わらなければ空欄 |
+| `picked_up_at` | 配達員または注文した本人が商品を受け取った時刻。観測終了までに受け取らなければ空欄 |
+| `delivered_at` | 配達完了時刻。観測終了時点の未配達注文と、来店者自身の注文では空欄 |
+
+初期設定の `order-6` は開始約3.06分後に注文され、約14.21分後に届いています。`delivered_at` から `ordered_at` を引くと、所要時間は約11.15分です。`courier_id` を `visitors.csv` の `id` と照合すると、担当は `visitor-8` と分かります。
+
+### `visitors.csv`（来店者ごとの記録）
+
+1行が来店者1人分の記録です。
+
+| 列 | 意味 |
+|---|---|
+| `id` | 来店者ID（例 `visitor-8`）。`orders.csv` の `courier_id` に対応 |
+| `store_id` | 来店した店舗のID |
+| `personal_order_id` | 来店者自身の注文ID。`orders.csv` の `id` に対応 |
+| `arrived_at` | 来店時刻 |
+| `participates` | `True` は配達を引き受けられる来店者、`False` は配達に参加しない来店者 |
+| `destination_id` | 来店者の行き先の地点ID。現行モデルでは配達の割り当て条件に使わない |
+| `capacity` | 参加者が出発時に引き受けられる配達注文の上限。現行モデルでは参加の有無にかかわらず列の値は `1` |
+| `departed_at` | 自分の商品を受け取って出発した時刻。観測終了までに出発しなければ空欄 |
+| `delivery_order_ids` | 引き受けた配達注文のID。`('order-6',)` は1件、`()` は0件。`participates` が `True` でも0件の場合がある |
 
 ## 構成
 
