@@ -2,15 +2,57 @@
 
 もともと店舗を利用する来店者が、ついでに他人の注文を届けるサービスを検討するための Python プロジェクトです。標準ライブラリだけで動く離散イベントシミュレーションを実装しています。Python 3.10以上に対応します。
 
-## 実行
+## はじめて実行する
 
-リポジトリのルートで実行します。追加パッケージのインストールは不要です。
+### 1. GitとPythonを確認する
+
+macOS・Linuxではターミナル、WindowsではPowerShellを開きます。以下のコマンドを1行ずつ実行してください。
+
+```bash
+git --version
+python3 --version
+```
+
+Windowsでは `python3 --version` の代わりに `py -3 --version` を使います。コマンドが見つからない場合は、[Git](https://git-scm.com/downloads) と [Python](https://www.python.org/downloads/) のうち必要なものをインストールし、ターミナルを開き直してください。Pythonは3.10以上が必要です。追加のPythonパッケージは不要です。
+
+### 2. プロジェクトを取得する
+
+保存したい場所で以下を実行します。`git clone` はGitHub上のファイルを自分のPCにコピーし、`cd` はそのフォルダへ移動します。
+
+```bash
+git clone https://github.com/8894asa/food-delivery-simulation.git
+cd food-delivery-simulation
+```
+
+PR #1の内容をマージ前に試す場合は、このフォルダで `git switch --track origin/feat/initial-simulation` を実行します。すでに取得済みなら、既存のフォルダを開いてください。
+
+### 3. 初期設定で実行する
+
+`README.md` があるフォルダで、お使いの環境に合うコマンドを実行します。
+
+**macOS・Linux**
 
 ```bash
 PYTHONPATH=src python3 -m campus_delivery_sim --config scenarios/baseline.json --output outputs/baseline
 ```
 
-集計を標準出力に表示し、指定ディレクトリに `summary.json`、実行条件の `config.json`、注文記録の `orders.csv`、来店者記録の `visitors.csv` を保存します。同じ出力先で再実行すると結果を上書きします。`--output` を省略するとファイルは保存しません。
+**Windows（PowerShell）**
+
+```powershell
+$env:PYTHONPATH = "src"
+py -3 -m campus_delivery_sim --config scenarios/baseline.json --output outputs/baseline
+```
+
+### 4. 結果を見る
+
+実行するとターミナルに集計が表示され、`outputs/baseline/` に次のファイルが保存されます。
+
+- `summary.json` — 配達件数、所要時間、未配達率などの集計
+- `config.json` — 実行に使った条件
+- `orders.csv` — 注文ごとの記録
+- `visitors.csv` — 来店者ごとの記録
+
+初期設定では、配達注文44件のうち38件が観測中に届きます。`completed_delivery_minutes.mean` は完了済みの注文にかかった平均時間（約13.3分）です。同じ出力先で再実行すると結果を上書きします。`--output` を省略すると集計はターミナルにだけ表示されます。
 
 テストは次のコマンドで実行します。
 
@@ -20,7 +62,7 @@ PYTHONPATH=src python3 -m unittest discover -s tests -v
 
 ## 条件の変更
 
-`scenarios/baseline.json` をコピーし、条件を変更できます。以下は動作確認用の仮定で、実際の大学の需要を推定した値ではありません。
+`scenarios/baseline.json` を `scenarios/my-scenario.json` などの名前でコピーし、テキストエディタで開きます。たとえば `participation_rate` を `0.5` から `0.7` に変えると、配達参加率が50％から70％になります。保存後、実行コマンドの `--config` にコピーしたファイルを指定します。`--output outputs/my-scenario` に変更すると、初期設定の結果と見比べられます。以下の初期値は動作確認用の仮定です。
 
 | 設定 | 初期値 | 意味 |
 |---|---:|---|
