@@ -1,4 +1,16 @@
-"""地点と移動時間モデルのスケルトン。
+"""地点IDによる参照と移動時間。経路別モデルへの差し替え箇所。"""
+from dataclasses import dataclass
 
-TODO: 店舗・配達先・来店者の行き先が参照する地点と、地点間の移動時間を定義する。
-"""
+
+@dataclass(frozen=True)
+class Location:
+    id: str
+
+
+@dataclass(frozen=True)
+class TravelTimes:
+    round_trip_minutes: float
+
+    def outbound_minutes(self, origin_id: str, destination_id: str) -> float:
+        # 初期モデルでは、すべての地点間を往復時間の半分とする。
+        return self.round_trip_minutes / 2
